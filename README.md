@@ -164,7 +164,7 @@ api-gateway/
 * [x] Redis-backed rate limiting
 * [x] Structured request logging
 * [x] Admin REST API
-* [ ] Admin React dashboard
+* [x] Admin React dashboard
 
 ---
 
