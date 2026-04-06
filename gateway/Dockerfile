@@ -5,6 +5,12 @@ FROM base As deps
 COPY package*.json ./
 RUN npm ci
 
+FROM base AS dev
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+EXPOSE 3000
+CMD ["npx", "ts-node-dev", "--respawn", "--transpile-only", "./src/main.ts"]
+
 FROM base AS build
 COPY --from=deps /app/node_modules ./node_modules
 COPY . .
