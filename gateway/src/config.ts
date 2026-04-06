@@ -1,5 +1,5 @@
 import Redis from 'ioredis';
-import { Route } from './types/index';
+import { Route, ApiKey } from './types/index';
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379')
 
@@ -32,6 +32,35 @@ export const seedRoutes = async (): Promise<void> => {
   await redis.set('gateway:routes', JSON.stringify(seed))
   routes = seed
   console.log('seeded routes into Redis')
+}
+
+export const seedKeys = async (): Promise<void> => {
+  const existing = await redis.hlen('gateway:keys');
+  if(existing > 0) return;
+
+  const keys: ApiKey[] = [
+    {
+      id: '1',
+      name: 'test-app',
+      key: 'key_test_123456',
+      active: true,
+      createdAt: new Date().toISOString()
+    },
+
+    {
+      id: '2',
+      name: 'disabled-app',
+      key: 'key_disable_789',
+      active: false,
+      createdAt: new Date().toISOString()
+    }
+  ]
+
+  for (const k of keys){
+    await redis.hset('gateway:keys', k.key, JSON.stringify(k));
+  }
+
+  console.log('seeded api keys into redis');
 }
 
 export { redis }

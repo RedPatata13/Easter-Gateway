@@ -1,8 +1,11 @@
 import Fastify from 'fastify'
-import { loadRoutes, seedRoutes } from './config'
+import { loadRoutes, seedKeys, seedRoutes } from './config'
 import { proxyRequest } from './proxy'
+import { authMiddleware } from './middleware/auth';
 
-const app = Fastify({ logger: true })
+const app = Fastify({ logger: true });
+
+app.addHook('onRequest', authMiddleware);
 
 app.get('/health', async () => {
   return { status: 'ok' }
@@ -13,6 +16,7 @@ app.all('/*', async (req, reply) => {
 })
 
 const start = async () => {
+  await seedKeys()
   await seedRoutes()
   await loadRoutes()
 

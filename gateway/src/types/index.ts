@@ -12,3 +12,10 @@ export interface GatewayRequest {
     upstream : string;
 }
 
+export interface ApiKey {
+    id: string;
+    name: string;
+    key: string;
+    active: boolean;
+    createdAt: string;
+}
