@@ -30,6 +30,8 @@ services:
     build:
       context: ./admin
       target: dev
+      args:
+        - VITE_ADMIN_API_KEY=${VITE_ADMIN_API_KEY}
     volumes:
       - ./admin/src:/app/src
     env_file: .env
