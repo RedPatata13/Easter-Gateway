@@ -1,33 +1,64 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { redis } from "../config";
+import { JwtPayload, verify as jwt_verify } from "jsonwebtoken";
+
+const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
+
+const verifyApiKey = async (key: string) : Promise<boolean> => {
+    const data = await redis.hget('gateway:keys', key);
+    if(!data) return false;
+
+    const keyData = JSON.parse(data);
+    return keyData.active === true;
+}
+
+const verifyJwt = (token: string): JwtPayload | null => {
+    try {
+        const decoded = jwt_verify(token, JWT_SECRET);
+        console.log("JWT Secret: ", JWT_SECRET);
+        return decoded as JwtPayload;
+    } catch {
+        return null;
+    }
+}
 
 export const authMiddleware = async (
     req: FastifyRequest,
     res: FastifyReply
 ): Promise<void> => {
     // if (req.url) === proces.env.}
-    if (req.url === '/health') return;
+    const bypass = ['/health', '/token'];
+    if (bypass.includes(req.url)) return;
+    console.log(req.url);
 
     const apiKey = req.headers['x-api-key'] as string;
+    const authHeader = req.headers['authorization'] as string;
+    if(apiKey){
+        const valid = await verifyApiKey(apiKey);
+        if(!valid) {
+            res.code(403).send({ error: 'invalid or disabled api key' });
+            return;
+        }
 
-    if(!apiKey){
-        res.code(401).send({ error: 'missing api key', hint: 'provided x-api-key header'});
+        req.log.info('authenticated via api key');
         return;
     }
 
-    const data = await redis.hget('gateway:keys', apiKey);
+    if(authHeader?.startsWith('Bearer ')) {
+        const token = authHeader.slice(7);
+        const payload = verifyJwt(token);
 
-    if(!data){
-        res.code(403).send({ error: 'invalid api key' });
+        if(!payload){
+            res.code(401).send({ error: 'invalid or expired token' });
+            return;
+        }
+
+        req.log.info({ sub: payload.sub }, 'authenticated via jwt');
         return;
     }
 
-    const keyData = JSON.parse(data);
-
-    if(!keyData.active){
-        res.code(403).send({ error: 'api key disabled' });
-        return;
-    }
-
-    req.log.info({ keyId: keyData.id, name: keyData.name }, 'authenticated');
+    res.code(401).send({
+        error: 'unauthorized',
+        hint: 'provide x-api-key header or bearer token'
+    });
 }
