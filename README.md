@@ -163,7 +163,7 @@ api-gateway/
 * [x] JWT authentication
 * [x] Redis-backed rate limiting
 * [x] Structured request logging
-* [ ] Admin REST API
+* [x] Admin REST API
 * [ ] Admin React dashboard
 
 ---
