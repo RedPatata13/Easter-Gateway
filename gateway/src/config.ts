@@ -1,5 +1,6 @@
 import Redis from 'ioredis';
 import { Route, ApiKey } from './types/index';
+import { channel } from 'node:diagnostics_channel';
 
 const redis = new Redis(process.env.REDIS_URL || 'redis://redis:6379')
 
@@ -62,5 +63,18 @@ export const seedKeys = async (): Promise<void> => {
 
   console.log('seeded api keys into redis');
 }
+
+const subcriber = new Redis(process.env.REDIS_URL || 'redis://redis:6379');
+
+export const subscribeToRouteChanges = async (): Promise<void> => {
+  await subcriber.subscribe('gateway:routes:changed');
+  subcriber.on('message', async (channel) => {
+    if(channel === 'gateway:routes:changed') {
+      await loadRoutes();
+      console.log('routes reloaded from redis');
+    }
+  })
+}
+
 
 export { redis }

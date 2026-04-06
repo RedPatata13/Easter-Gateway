@@ -162,7 +162,7 @@ api-gateway/
 * [x] API key authentication
 * [x] JWT authentication
 * [x] Redis-backed rate limiting
-* [ ] Structured request logging
+* [x] Structured request logging
 * [ ] Admin REST API
 * [ ] Admin React dashboard
 

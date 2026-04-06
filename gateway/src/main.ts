@@ -1,6 +1,6 @@
 import 'dotenv/config';
 import Fastify from 'fastify'
-import { loadRoutes, seedKeys, seedRoutes } from './config'
+import { loadRoutes, seedKeys, seedRoutes, subscribeToRouteChanges } from './config'
 import { proxyRequest } from './proxy'
 import { authMiddleware } from './middleware/auth';
 import { sign as jwt_sign } from "jsonwebtoken";
@@ -41,6 +41,7 @@ const start = async () => {
   await seedKeys()
   await seedRoutes()
   await loadRoutes()
+  await subscribeToRouteChanges()
 
   await app.listen({
     port: Number(process.env.GATEWAY_PORT) || 3000,

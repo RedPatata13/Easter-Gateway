@@ -26,6 +26,21 @@ services:
       redis:
         condition: service_healthy
     restart: unless-stopped
+  admin:
+    build:
+      context: ./admin
+      target: dev
+    volumes:
+      - ./admin/src:/app/src
+    env_file: .env
+    networks:
+      - internal
+    ports:
+      - "4000:4000"
+    depends_on:
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
 
   nginx:
     image: nginx:alpine
@@ -42,6 +57,8 @@ services:
 networks:
   internal:
     driver: bridge
+
+
 
 volumes:
   redis-data:
