@@ -158,7 +158,7 @@ api-gateway/
 ## Roadmap
 
 * [x] Docker Compose setup with Redis and nginx
-* [ ] Route matching and reverse proxy
+* [x] Route matching and reverse proxy
 * [ ] API key authentication
 * [ ] JWT authentication
 * [ ] Redis-backed rate limiting
