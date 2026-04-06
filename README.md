@@ -1,19 +1,21 @@
+---
+
 # api-gateway
 
-A horizontally scalable API Gateway built from scratch with Node.js and TypeScript. Inspired by AWS API Gateway — supports route matching, API key and JWT authentication, per-key rate limiting, and structured request logging. All instances are stateless, sharing state through Redis, and sit behind an nginx load balancer.
+A horizontally scalable API Gateway built with Node.js and TypeScript. Inspired by AWS API Gateway, it supports dynamic route matching, API key and JWT authentication, distributed rate limiting, and structured request logging.
 
-Built as a portfolio project to demonstrate systems design and backend engineering fundamentals.
+Designed as a deep dive into backend systems design, focusing on stateless services, shared infrastructure, and scalable request handling.
 
 ---
 
 ## Features
 
-- **Reverse proxy** — route incoming requests to upstream services by method and path
-- **Authentication** — API key and JWT validation on every request
-- **Rate limiting** — Redis-backed sliding window limiter, accurate across all instances
-- **Request logging** — structured JSON logs via pino with trace IDs per request
-- **Admin dashboard** — React UI to manage routes, API keys, and rate limit configs
-- **Horizontal scaling** — stateless gateway instances behind nginx, scale with a single command
+* **Reverse proxy** — route incoming requests to upstream services by method and path
+* **Authentication** — API key and JWT validation on every request
+* **Rate limiting** — Redis-backed sliding window limiter, consistent across instances
+* **Request logging** — structured JSON logs via pino with per-request trace IDs
+* **Admin dashboard** — React UI for managing routes, API keys, and rate limit configs
+* **Horizontal scaling** — stateless gateway instances behind nginx
 
 ---
 
@@ -36,7 +38,9 @@ Redis (shared state)
   - Route definitions
 ```
 
-Each gateway instance is completely stateless. Redis is the single source of truth for all shared data, which means adding more instances requires no configuration changes — just scale up.
+Each gateway instance is stateless. Shared configuration and runtime data are stored in Redis, allowing new instances to be added without additional coordination.
+
+---
 
 ### Request lifecycle
 
@@ -44,9 +48,9 @@ Each gateway instance is completely stateless. Redis is the single source of tru
 Incoming request
   → logger (assign trace ID)
   → auth (validate API key or JWT)
-  → rate limiter (sliding window check against Redis)
+  → rate limiter (sliding window check via Redis)
   → router (match path + method → upstream URL)
-  → proxy (forward request, strip/add headers)
+  → proxy (forward request, adjust headers)
   → logger (record response status and latency)
 ```
 
@@ -54,15 +58,15 @@ Incoming request
 
 ## Tech stack
 
-| Concern | Tool |
-|---|---|
-| Runtime | Node.js 20 |
-| Language | TypeScript |
-| HTTP server | Fastify |
-| Shared state | Redis 7 + ioredis |
-| Load balancer | nginx |
-| Logging | pino |
-| Containers | Docker + Docker Compose |
+| Concern       | Tool                    |
+| ------------- | ----------------------- |
+| Runtime       | Node.js 20              |
+| Language      | TypeScript              |
+| HTTP server   | Fastify                 |
+| Shared state  | Redis 7 + ioredis       |
+| Load balancer | nginx                   |
+| Logging       | pino                    |
+| Containers    | Docker + Docker Compose |
 
 ---
 
@@ -70,8 +74,8 @@ Incoming request
 
 ### Prerequisites
 
-- [Docker](https://docs.docker.com/get-docker/)
-- [Docker Compose](https://docs.docker.com/compose/)
+* Docker
+* Docker Compose
 
 ### Run locally
 
@@ -80,12 +84,14 @@ git clone https://github.com/RedPatata13/api-gateway.git
 cd api-gateway
 
 cp .env.example .env
-# edit .env and fill in your secrets
+# configure environment variables
 
 docker compose up --build
 ```
 
-The gateway will be available at `http://localhost:80`.
+Gateway will be available at `http://localhost:80`.
+
+---
 
 ### Scale gateway instances
 
@@ -93,21 +99,16 @@ The gateway will be available at `http://localhost:80`.
 docker compose up --scale gateway=3
 ```
 
-nginx automatically distributes traffic across all running instances.
+nginx distributes traffic automatically across instances.
+
+---
 
 ### Useful commands
 
 ```bash
-# view logs for a specific service
 docker compose logs -f gateway
-
-# check all running services
 docker compose ps
-
-# stop everything
 docker compose down
-
-# stop and remove volumes (clears Redis data)
 docker compose down -v
 ```
 
@@ -119,21 +120,21 @@ docker compose down -v
 api-gateway/
 ├── docker-compose.yml
 ├── .env.example
-├── gateway/                  # core proxy process
+├── gateway/
 │   ├── Dockerfile
 │   └── src/
-│       ├── main.ts           # server entry point
-│       ├── router.ts         # route matching
-│       ├── proxy.ts          # request forwarding
-│       ├── config.ts         # loads config from Redis
+│       ├── main.ts
+│       ├── router.ts
+│       ├── proxy.ts
+│       ├── config.ts
 │       └── middleware/
-│           ├── auth.ts       # API key / JWT validation
-│           ├── rateLimit.ts  # sliding window rate limiter
-│           └── logger.ts     # structured request logging
-├── admin/                    # admin UI + config API
+│           ├── auth.ts
+│           ├── rateLimit.ts
+│           └── logger.ts
+├── admin/
 │   └── src/
-│       ├── api/              # CRUD for routes and keys
-│       └── ui/               # React dashboard
+│       ├── api/
+│       └── ui/
 ├── nginx/
 │   └── nginx.conf
 └── redis/
@@ -144,31 +145,31 @@ api-gateway/
 
 ## Environment variables
 
-Copy `.env.example` to `.env` and fill in the values.
-
-| Variable | Description |
-|---|---|
-| `REDIS_URL` | Redis connection string |
-| `JWT_SECRET` | Secret used to verify JWT tokens |
-| `ADMIN_API_KEY` | Key required to access the admin API |
-| `GATEWAY_PORT` | Port the gateway listens on (default: 3000) |
-| `NODE_ENV` | `development` or `production` |
+| Variable        | Description                  |
+| --------------- | ---------------------------- |
+| `REDIS_URL`     | Redis connection string      |
+| `JWT_SECRET`    | Secret for JWT verification  |
+| `ADMIN_API_KEY` | Admin API access key         |
+| `GATEWAY_PORT`  | Gateway port (default: 3000) |
+| `NODE_ENV`      | Environment mode             |
 
 ---
 
 ## Roadmap
 
-- [x] Docker Compose setup with Redis and nginx
-- [ ] Route matching and reverse proxy
-- [ ] API key authentication
-- [ ] JWT authentication
-- [ ] Redis-backed rate limiting
-- [ ] Structured request logging
-- [ ] Admin REST API
-- [ ] Admin React dashboard
+* [x] Docker Compose setup with Redis and nginx
+* [ ] Route matching and reverse proxy
+* [ ] API key authentication
+* [ ] JWT authentication
+* [ ] Redis-backed rate limiting
+* [ ] Structured request logging
+* [ ] Admin REST API
+* [ ] Admin React dashboard
 
 ---
 
 ## License
 
 MIT
+
+---
