@@ -161,7 +161,7 @@ api-gateway/
 * [x] Route matching and reverse proxy
 * [x] API key authentication
 * [x] JWT authentication
-* [ ] Redis-backed rate limiting
+* [x] Redis-backed rate limiting
 * [ ] Structured request logging
 * [ ] Admin REST API
 * [ ] Admin React dashboard

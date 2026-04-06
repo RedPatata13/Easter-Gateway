@@ -1,6 +1,7 @@
 import { FastifyRequest, FastifyReply } from "fastify";
 import { redis } from "../config";
 import { JwtPayload, verify as jwt_verify } from "jsonwebtoken";
+import { bypass } from "./bypass";
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
@@ -27,7 +28,6 @@ export const authMiddleware = async (
     res: FastifyReply
 ): Promise<void> => {
     // if (req.url) === proces.env.}
-    const bypass = ['/health', '/token'];
     if (bypass.includes(req.url)) return;
     console.log(req.url);
 
