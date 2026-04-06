@@ -160,7 +160,7 @@ api-gateway/
 * [x] Docker Compose setup with Redis and nginx
 * [x] Route matching and reverse proxy
 * [x] API key authentication
-* [ ] JWT authentication
+* [x] JWT authentication
 * [ ] Redis-backed rate limiting
 * [ ] Structured request logging
 * [ ] Admin REST API
