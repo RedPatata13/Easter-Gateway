@@ -59,6 +59,7 @@ export const authMiddleware = async (
 
     res.code(401).send({
         error: 'unauthorized',
+        traceId: req.traceId,
         hint: 'provide x-api-key header or bearer token'
     });
 }

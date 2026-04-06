@@ -19,3 +19,10 @@ export interface ApiKey {
     active: boolean;
     createdAt: string;
 }
+
+declare module 'fastify' {
+    interface FastifyRequest {
+        traceId: string;
+        startTime: number
+    }
+}

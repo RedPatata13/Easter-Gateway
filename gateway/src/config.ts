@@ -14,6 +14,9 @@ export const loadRoutes = async (): Promise<void> => {
 export const getRoutes = (): Route[] => routes
 
 export const seedRoutes = async (): Promise<void> => {
+  const existing = await redis.get(`gateway:routes`);
+  if(existing) return;
+
   const seed: Route[] = [
     {
       id: '1',

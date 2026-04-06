@@ -62,6 +62,7 @@ export const rateLimitMiddleware = async (
     if(result === -1){
         res.code(429).send({
             error: 'rate limit exceeded',
+            traceId: req.traceId,
             hint: 'slow down - max 60 requests per 60 seconds'
         });
     }

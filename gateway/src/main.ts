@@ -5,13 +5,16 @@ import { proxyRequest } from './proxy'
 import { authMiddleware } from './middleware/auth';
 import { sign as jwt_sign } from "jsonwebtoken";
 import { rateLimitMiddleware } from './middleware/rateLimit';
+import { loggerMiddleware, loggerResponseHook } from './middleware/logger';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'dev-secret';
 
 const app = Fastify({ logger: true });
 
+app.addHook('onRequest', loggerMiddleware);
 app.addHook('onRequest', authMiddleware);
 app.addHook('onRequest', rateLimitMiddleware);
+app.addHook('onResponse', loggerResponseHook);
 
 app.get('/health', async () => {
   return { status: 'ok' }
