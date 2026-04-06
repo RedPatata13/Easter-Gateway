@@ -41,10 +41,10 @@ export const keysRouter = async (app: FastifyInstance): Promise<void> => {
     return keyData
   })
 
-  app.delete('/keys/:key', async (req, reply) => {
-    const { key } = req.params as { key: string }
-    const deleted = await redis.hdel('gateway:keys', key)
-
+  app.delete('/keys/:keyValue', async (req, reply) => {
+    const { keyValue } = req.params as { keyValue: string }
+    console.log('attempting to delete:', keyValue)
+    const deleted = await redis.hdel('gateway:keys', keyValue)
     if (!deleted) return reply.code(404).send({ error: 'key not found' })
     return reply.code(204).send()
   })

@@ -7,7 +7,6 @@ type Tab = 'routes' | 'keys'
 
 export default function App() {
   const [tab, setTab] = useState<Tab>('routes')
-  console.log('admin key:', import.meta.env.VITE_ADMIN_API_KEY)
   return (
     <div className="min-h-screen">
       <div className="max-w-3xl mx-auto px-4 py-8">

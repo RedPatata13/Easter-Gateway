@@ -40,6 +40,7 @@ export const RoutesPage = () => {
   }
 
   const remove = async (id: string) => {
+    if (!window.confirm('delete this route?')) return
     await api.routes.delete(id)
     load()
   }

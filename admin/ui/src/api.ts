@@ -5,6 +5,10 @@ const headers = () => ({
   'x-admin-key': import.meta.env.VITE_ADMIN_API_KEY || ''
 })
 
+const headersNoBody = () => ({
+  'x-admin-key': import.meta.env.VITE_ADMIN_API_KEY || ''
+})
+
 export const api = {
   keys: {
     list: () => fetch(`${BASE}/admin/keys`, { headers: headers() })
@@ -22,8 +26,11 @@ export const api = {
     }).then(r => r.json()),
     delete: (key: string) => fetch(`${BASE}/admin/keys/${key}`, {
       method: 'DELETE',
-      headers: headers()
-    })
+      headers: headersNoBody()
+    }).then(r => {
+      if (!r.ok) throw new Error('failed to delete key')
+      return r
+    }),
   },
   routes: {
     list: () => fetch(`${BASE}/admin/routes`, { headers: headers() })
@@ -36,7 +43,10 @@ export const api = {
     }).then(r => r.json()),
     delete: (id: string) => fetch(`${BASE}/admin/routes/${id}`, {
       method: 'DELETE',
-      headers: headers()
-    })
+      headers: headersNoBody()
+    }).then(r => {
+      if (!r.ok) throw new Error('failed to delete route')
+      return r
+    }),
   }
 }

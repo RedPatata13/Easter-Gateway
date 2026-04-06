@@ -32,6 +32,7 @@ export const KeysPage = () => {
   }
 
   const remove = async (key: string) => {
+    if (!window.confirm('delete this key?')) return
     await api.keys.delete(key)
     load()
   }
